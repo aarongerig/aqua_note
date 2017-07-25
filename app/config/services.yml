@@ -7,9 +7,9 @@ services:
     # default configuration for services in *this* file
     _defaults:
         # automatically injects dependencies in your services
-        autowire: true
+        autowire: false
         # automatically registers your services as commands, event subscribers, etc.
-        autoconfigure: true
+        autoconfigure: false
         # this means you cannot fetch services directly from the container via $container->get()
         # if you need to do this, you can override this setting on individual services
         public: false
@@ -30,6 +30,22 @@ services:
         tags: ['controller.service_arguments']
 
     # add more services, or override services that need manual wiring
-    # AppBundle\Service\ExampleService:
-    #     arguments:
-    #         $someArgument: 'some_value'
+    app.markdown_transformer:
+        class: AppBundle\Service\MarkdownTransformer
+        arguments: ['@markdown.parser', '@doctrine_cache.providers.my_markdown_cache']
+
+    app.markdown_extension:
+        class: AppBundle\Twig\MarkdownExtension
+        arguments: ['@app.markdown_transformer']
+        tags:
+            - { name: twig.extension }
+
+    app.security.login_form_authenticator:
+        class: AppBundle\Security\LoginFormAuthenticator
+        autowire: true
+
+    app.doctrine.hash_password_listener:
+        class: AppBundle\Doctrine\HashPasswordListener
+        autowire: true
+        tags:
+            - { name: doctrine.event_subscriber }
