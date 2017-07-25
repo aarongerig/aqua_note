@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\GenusRepository")
@@ -19,16 +20,21 @@ class Genus
     private $id;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string")
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\SubFamily")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $subFamily;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Range(min=0, minMessage="Negative species! Come on...")
      * @ORM\Column(type="integer")
      */
     private $speciesCount;
@@ -44,14 +50,31 @@ class Genus
     private $isPublished = true;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\GenusNote", mappedBy="genus")
-     * @ORM\OrderBy({"createdAt"="DESC"})
+     * @Assert\NotBlank()
+     * @ORM\Column(type="date")
+     */
+    private $firstDiscoveredAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="GenusNote", mappedBy="genus")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $notes;
 
+    /**
+     * Genus constructor.
+     */
     public function __construct()
     {
         $this->notes = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -63,7 +86,7 @@ class Genus
     }
 
     /**
-     * @param mixed $name
+     * @param $name
      */
     public function setName($name)
     {
@@ -71,7 +94,7 @@ class Genus
     }
 
     /**
-     * @return mixed
+     * @return SubFamily
      */
     public function getSubFamily()
     {
@@ -79,9 +102,9 @@ class Genus
     }
 
     /**
-     * @param mixed $subFamily
+     * @param SubFamily $subFamily
      */
-    public function setSubFamily($subFamily)
+    public function setSubFamily(SubFamily $subFamily)
     {
         $this->subFamily = $subFamily;
     }
@@ -95,7 +118,7 @@ class Genus
     }
 
     /**
-     * @param mixed $speciesCount
+     * @param $speciesCount
      */
     public function setSpeciesCount($speciesCount)
     {
@@ -111,20 +134,31 @@ class Genus
     }
 
     /**
-     * @param mixed $funFact
+     * @param $funFact
      */
     public function setFunFact($funFact)
     {
         $this->funFact = $funFact;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getUpdatedAt()
     {
         return new \DateTime('-'.rand(0, 100).' days');
     }
 
     /**
-     * @param mixed $isPublished
+     * @return mixed
+     */
+    public function getIsPublished()
+    {
+        return $this->isPublished;
+    }
+
+    /**
+     * @param $isPublished
      */
     public function setIsPublished($isPublished)
     {
@@ -137,5 +171,21 @@ class Genus
     public function getNotes()
     {
         return $this->notes;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFirstDiscoveredAt()
+    {
+        return $this->firstDiscoveredAt;
+    }
+
+    /**
+     * @param \DateTime|null $firstDiscoveredAt
+     */
+    public function setFirstDiscoveredAt(\DateTime $firstDiscoveredAt = null)
+    {
+        $this->firstDiscoveredAt = $firstDiscoveredAt;
     }
 }

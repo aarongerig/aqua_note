@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Genus;
 use AppBundle\Entity\GenusNote;
-use Faker\Provider\DateTime;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -44,10 +43,10 @@ class GenusController extends Controller
     public function listAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $genuses = $em->getRepository('AppBundle:Genus')->findAllPublishedOrderedByRecentlyActive();
+        $genera = $em->getRepository('AppBundle:Genus')->findAllPublishedOrderedByRecentlyActive();
 
         return $this->render('genus/list.html.twig', [
-            'genuses' => $genuses
+            'genera' => $genera
         ]);
     }
 
@@ -65,19 +64,6 @@ class GenusController extends Controller
         if (!$genus) {
             throw $this->createNotFoundException('No genus found');
         }
-
-//        $cache = $this->get('doctrine_cache.providers.my_markdown_cache');
-//        $key = md5($funFact);
-//
-//        if ($cache->contains($key)) {
-//            $funFact = $cache->fetch($key);
-//        } else {
-//            sleep(1);
-//            $funFact = $this->get('markdown.parser')->transform($funFact);
-//            $cache->save($key, $funFact);
-//        }
-
-        $this->get('logger')->info('Showing genus: '.$genusName);
 
         $recentNotes = $em->getRepository('AppBundle:GenusNote')->findAllRecentNotesForGenus($genus);
 
